@@ -17,3 +17,7 @@ As @Mytskine pointed out probably the best in-depth explanation is the RFC for c
 ## Arrow functions passes closures without the use clause
 
 Short closures, also called arrow functions, are a way of writing shorter functions in PHP. This notation is useful when passing closures to functions like array_map or array_filter.
+
+## Blade echo {{  }}
+
+Remember that {{}} in Laravel is the equivalent of <?= ?>
