@@ -30,3 +30,77 @@ I'd use the try/catch block when the normal path through the code should proceed
 In the case that you've described -- setting up and performing a query, a try/catch block is an excellent way to handle it as you normally expect the query to succeed. On the other hand, you'll probably want to check that the contents of result are what you expect with control flow logic rather than just attempting to use data that may not be valid for your purpose.
 
 One thing that you want to look out for is sloppy use of try/catch. Try/catch shouldn't be used to protect yourself from bad programming -- the "I don't know what will happen if I do this so I'm going to wrap it in a try/catch and hope for the best" kind of programming. Typically you'll want to restrict the kinds of exceptions you catch to those that are not related to the code itself (server down, bad credentials, etc.) so that you can find and fix errors that are code related (null pointers, etc.).
+
+## Ternary vs Null coalescing PHP
+
+Before null coalescing we have ternary operation and empty(), is_null(), isset().
+
+is_null() will throw error if variable is undefined, isset() will not.
+
+\*\* Silly confusion:
+
+Say you have to pass variable to isset(). You cannot pass result of variable.
+
+So I got confused when I do isset($order->amount). Why does it work? Because $order->amount is
+a variable. It translates to $order->amount = x;
+I thought that a variable should be something like $amount which translates to $amount = $order->amount;
+
+Hahahaha. Silly.
+
+So for the most part, use isset().
+
+?? uses isset().
+
+$result = $var ?? 'default';
+// is a shorthand for 
+$result = isset($var) ? $var : 'default';
+
+$result = $var ?: 'default';
+// is a shorthand for 
+$result = $var ? $var : 'default';
+
+Of course, this is always assuming the first argument is null.
+Once it's no longer null, then you end up with differences in that the ?? operator
+would always return the first argument while the ?: shorthand would only if the first
+argument was truthy, and that relies on how PHP would type-cast things to a boolean.
+
+so basically this check is almost the same as using ?? or isset() except that
+it doesn't accept blank text or falsy values.
+if (!empty($var) || $var === 0 || $var === '0') {
+// $var is non-blank text, true, 0 or '0'
+// $var is NOT an empty string, null, false or undefined
+}
+
+Also this kind of check is kind of stupid:
+
+$a = '';
+
+if ($a ?? false) {
+echo 'touge';
+}
+
+Why? because if () itself will always abort for falsy values. The resulting
+expression inside the if parentheses is '', which is a falsy value. Thus if
+doesn't run.
+
+This one makes more sense:
+
+if (isset($a)) {
+echo 'touge';
+}
+
+Well the first check makes sense if $a is not falsy values.
+
+Basically if you
+
+if ($a ?? false) {
+echo 'touge';
+}
+
+It's the same as
+
+if ($a ?: false) {
+echo 'touge';
+}
+
+But safe from undefined values.
